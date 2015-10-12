@@ -3,6 +3,9 @@ package vpn;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/*
+ * This class is called when the "Connect as client" button is pressed
+ */
 public class Client implements ActionListener {
 
     @Override

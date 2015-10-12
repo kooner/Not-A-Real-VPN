@@ -1,15 +1,28 @@
 package vpn;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 import vpn.ui.ConnectionPanel;
 import vpn.ui.LogPanel;
 import vpn.ui.SendPanel;
 
+/*
+ * This class holds all global data
+ */
 public class GlobalDao {
 
     private ConnectionPanel connectionPanel;
     private LogPanel logPanel;
     private SendPanel sendPanel;
-
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
+    private BufferedReader inputReader;
+    private DataOutputStream outputWriter;
+    
     public void setConnectionPanel(ConnectionPanel connectionPanel) {
         this.connectionPanel = connectionPanel;
     }
@@ -20,6 +33,38 @@ public class GlobalDao {
     
     public void setSendPanel(SendPanel sendPanel) {
         this.sendPanel = sendPanel;
+    }
+    
+    public void setServerSocket(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
+    }
+    
+    public ServerSocket getServerSocket() {
+        return serverSocket;
+    }
+    
+    public synchronized void setClientSocket(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+    }
+    
+    public synchronized Socket getClientSocket() {
+        return clientSocket;
+    }
+    
+    public synchronized void setInputReader(BufferedReader inputReader) {
+        this.inputReader = inputReader;
+    }
+    
+    public synchronized BufferedReader getInputReader() {
+        return inputReader;
+    }
+    
+    public synchronized void setOutputWriter(DataOutputStream outputWriter) {
+        this.outputWriter = outputWriter;
+    }
+    
+    public synchronized DataOutputStream getOutputWriter() {
+        return outputWriter;
     }
     
     public String getTextToSend() {
@@ -48,5 +93,32 @@ public class GlobalDao {
     
     public synchronized void setStatus(String s) {
         connectionPanel.setStatus(s);
+    }
+    
+    public synchronized void forceCloseSockets() {
+        if (inputReader != null) {
+            try {
+                inputReader.close();
+            } catch (IOException e) {}
+            inputReader = null;
+        }
+        if (outputWriter != null) {
+            try {
+                outputWriter.close();            
+            } catch (IOException e) {}
+            outputWriter = null;
+        }
+        if (clientSocket != null) {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {}
+            clientSocket = null;
+        }
+        if (serverSocket != null) {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {}
+            serverSocket = null;
+        }
     }
 }

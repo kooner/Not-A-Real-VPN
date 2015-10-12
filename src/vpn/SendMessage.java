@@ -3,6 +3,9 @@ package vpn;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/*
+ * This class is called when the "Send" button is pressed
+ */
 public class SendMessage implements ActionListener {
 
     @Override
