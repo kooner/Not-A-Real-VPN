@@ -37,6 +37,7 @@ public class ConnectionPanel extends JPanel {
         
         JLabel ipLabel = new JLabel("IP: ");
         ip = new JTextField(15);
+        ip.setText("localhost");
         JPanel ipPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         ipPanel.add(ipLabel);
         ipPanel.add(ip);
@@ -44,6 +45,7 @@ public class ConnectionPanel extends JPanel {
 
         JLabel portLabel = new JLabel("Port: ");
         port = new JTextField(15);
+        port.setText("19999");
         JPanel portPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         portPanel.add(portLabel);
         portPanel.add(port);

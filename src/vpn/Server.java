@@ -2,13 +2,8 @@ package vpn;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
 
 /*
  * This class is called when the "Listen as server" button is pressed
@@ -18,9 +13,6 @@ public class Server implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String status = VPN.globaldao.getStatus();
-        //if status is disconnected, start listening..
-        // set status accordingly after finished
-        // write to log that we are now listening
         if (status == Status.DISCONNECTED) {
             try {
                 int port = Integer.parseInt(VPN.globaldao.getPort());

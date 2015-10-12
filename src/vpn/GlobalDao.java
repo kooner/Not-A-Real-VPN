@@ -95,12 +95,13 @@ public class GlobalDao {
         connectionPanel.setStatus(s);
     }
     
+    // Ugly but working way to completely reset the program's state
     public synchronized void forceCloseSockets() {
-        if (inputReader != null) {
+        if (clientSocket != null) {
             try {
-                inputReader.close();
+                clientSocket.close();
             } catch (IOException e) {}
-            inputReader = null;
+            clientSocket = null;
         }
         if (outputWriter != null) {
             try {
@@ -108,11 +109,11 @@ public class GlobalDao {
             } catch (IOException e) {}
             outputWriter = null;
         }
-        if (clientSocket != null) {
+        if (inputReader != null) {
             try {
-                clientSocket.close();
+                inputReader.close();
             } catch (IOException e) {}
-            clientSocket = null;
+            inputReader = null;
         }
         if (serverSocket != null) {
             try {

@@ -2,8 +2,6 @@ package vpn;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.ServerSocket;
 
 /*
  * This class is called when the "Stop Action" button is called

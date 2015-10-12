@@ -13,11 +13,14 @@ public class ReceiveMessage implements Runnable {
         String line;
         try {
             while ((line = inputReader.readLine()) != null) {
+                // TODO: decryption goes here, write both cipher and plain text to log
                 VPN.globaldao.writeToLog("Received: " + line);
             }
         } catch (IOException e) {
-            // TODO: This might output everytime we press "Stop Action". Delete it if it does.
-            VPN.globaldao.writeToLog("Error occurred while receiving messages: " + e.getMessage());
+            // Connection closed for whatever reason, probably intentionally
+            VPN.globaldao.forceCloseSockets();
+            VPN.globaldao.writeToLog("Connection closed");
+            VPN.globaldao.setStatus(Status.DISCONNECTED);
         }
     }
 }
