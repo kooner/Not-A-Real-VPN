@@ -2,10 +2,9 @@ package vpn;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 
 /*
@@ -25,10 +24,10 @@ public class Client implements ActionListener {
 
                 // TODO: this should be done in a separate thread
                 Socket clientSocket = new Socket(ip, port);
-                BufferedReader inputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                BufferedInputStream inputStream = new BufferedInputStream(clientSocket.getInputStream());
                 DataOutputStream outputWriter = new DataOutputStream(clientSocket.getOutputStream());
                 VPN.globaldao.setClientSocket(clientSocket);
-                VPN.globaldao.setInputReader(inputReader);
+                VPN.globaldao.setInputStream(inputStream);
                 VPN.globaldao.setOutputWriter(outputWriter);
                 VPN.globaldao.writeToLog("Connected to the server.");
                 VPN.globaldao.setStatus(Status.CLIENT_CONNECTED);

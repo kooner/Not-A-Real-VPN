@@ -1,28 +1,74 @@
 package vpn;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.BufferedInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import vpn.ui.ConnectionPanel;
 import vpn.ui.LogPanel;
 import vpn.ui.SendPanel;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 /*
  * This class holds all global data
  */
 public class GlobalDao {
 
+	public final int kKeyLength = 16;
+
     private ConnectionPanel connectionPanel;
     private LogPanel logPanel;
     private SendPanel sendPanel;
     private ServerSocket serverSocket;
     private Socket clientSocket;
-    private BufferedReader inputReader;
+    private BufferedInputStream inputStream;
     private DataOutputStream outputWriter;
-    
+
+    // Base AES encryption keys
+    // These must be the length of our AES Cipher Block Length (16 bytes)
+    private byte [] aesBaseEncryptKey;
+    private byte [] aesBaseDecryptKey;
+    // TODO: Add additional keys here (shared key, etc.)
+
+    // In: 16-byte key
+    public void setAesBaseEncryptKey(byte [] encryptKey) {
+		if (encryptKey.length == kKeyLength) {
+			this.aesBaseEncryptKey = encryptKey;
+		}
+		else {
+			VPN.globaldao.writeToLog("AES Encrypt Key not set! Invalid key length! Valid Length: 16 bytes");
+		}
+	}
+
+    // In: 16-byte key
+    public void setAesBaseDecryptKey(byte [] decryptKey) {
+		if (decryptKey.length == kKeyLength) {
+			this.aesBaseDecryptKey = decryptKey;
+		}
+		else {
+			VPN.globaldao.writeToLog("AES Decrypt Key not set! Invalid key length! Valid Length: 16 bytes");
+		}
+	}
+
+	// TODO: Implement additional keys here (hint: private shared key)
+    // (You can use an overloaded SecretKeySpec)
+    public SecretKeySpec getAesEncryptKey() {
+		return new SecretKeySpec(this.aesBaseEncryptKey, "AES");
+    }
+
+	// TODO: Implement additional keys here (hint: private shared key)
+    // (You can use an overloaded SecretKeySpec)
+    public SecretKeySpec getAesDecryptKey() {
+		return new SecretKeySpec(this.aesBaseDecryptKey, "AES");
+    }
+
     public void setConnectionPanel(ConnectionPanel connectionPanel) {
         this.connectionPanel = connectionPanel;
     }
@@ -51,12 +97,12 @@ public class GlobalDao {
         return clientSocket;
     }
     
-    public synchronized void setInputReader(BufferedReader inputReader) {
-        this.inputReader = inputReader;
+    public synchronized void setInputStream(BufferedInputStream inputStream) {
+        this.inputStream = inputStream;
     }
     
-    public synchronized BufferedReader getInputReader() {
-        return inputReader;
+    public synchronized BufferedInputStream getInputStream() {
+        return inputStream;
     }
     
     public synchronized void setOutputWriter(DataOutputStream outputWriter) {
@@ -109,11 +155,11 @@ public class GlobalDao {
             } catch (IOException e) {}
             outputWriter = null;
         }
-        if (inputReader != null) {
+        if (inputStream != null) {
             try {
-                inputReader.close();
+                inputStream.close();
             } catch (IOException e) {}
-            inputReader = null;
+            inputStream = null;
         }
         if (serverSocket != null) {
             try {

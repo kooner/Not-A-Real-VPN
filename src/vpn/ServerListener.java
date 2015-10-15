@@ -1,9 +1,8 @@
 package vpn;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -17,10 +16,10 @@ public class ServerListener implements Runnable {
         try {
             // accept() is a blocking call
             Socket clientSocket = VPN.globaldao.getServerSocket().accept();
-            BufferedReader inputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            BufferedInputStream inputStream = new BufferedInputStream(clientSocket.getInputStream());
             DataOutputStream outputWriter = new DataOutputStream(clientSocket.getOutputStream());
             VPN.globaldao.setClientSocket(clientSocket);
-            VPN.globaldao.setInputReader(inputReader);
+            VPN.globaldao.setInputStream(inputStream);
             VPN.globaldao.setOutputWriter(outputWriter);
             VPN.globaldao.writeToLog("Connected to client");
             VPN.globaldao.setStatus(Status.SERVER_CONNECTED);

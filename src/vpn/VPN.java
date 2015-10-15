@@ -1,5 +1,7 @@
 package vpn;
 
+import java.io.UnsupportedEncodingException;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -14,6 +16,8 @@ public class VPN {
     public static final int x = 1024;
     public static final int y = 768;
     
+    public static final String PLACEHOLDERKEY = "1234432112344321";
+
     private final JFrame frame = new JFrame("CPEN 442 [NOT A REAL] VPN");
 
     public static void main(String[] args) {
@@ -28,6 +32,15 @@ public class VPN {
         globaldao.setConnectionPanel(cp);
         globaldao.setLogPanel(lp);
         globaldao.setSendPanel(sp);
+
+        // Set AES keys to constant PLACEHOLDERKEY
+        // WARNING: Final delivered product should NOT use AES keys set here
+        try {
+			globaldao.setAesBaseEncryptKey(PLACEHOLDERKEY.getBytes("UTF-8"));
+			globaldao.setAesBaseDecryptKey(PLACEHOLDERKEY.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 
         JPanel mainPanel = new JPanel();
         mainPanel.add(cp);
