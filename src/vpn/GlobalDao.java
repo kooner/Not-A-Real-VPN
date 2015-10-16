@@ -21,7 +21,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class GlobalDao {
 
-	public final int kKeyLength = 16;
+    public final int kKeyLength = 16;
 
     private ConnectionPanel connectionPanel;
     private LogPanel logPanel;
@@ -39,34 +39,34 @@ public class GlobalDao {
 
     // In: 16-byte key
     public void setAesBaseEncryptKey(byte [] encryptKey) {
-		if (encryptKey.length == kKeyLength) {
-			this.aesBaseEncryptKey = encryptKey;
-		}
-		else {
-			VPN.globaldao.writeToLog("AES Encrypt Key not set! Invalid key length! Valid Length: 16 bytes");
-		}
-	}
+        if (encryptKey.length == kKeyLength) {
+            this.aesBaseEncryptKey = encryptKey;
+        }
+        else {
+            VPN.globaldao.writeToLog("AES Encrypt Key not set! Invalid key length! Valid Length: 16 bytes");
+        }
+    }
 
     // In: 16-byte key
     public void setAesBaseDecryptKey(byte [] decryptKey) {
-		if (decryptKey.length == kKeyLength) {
-			this.aesBaseDecryptKey = decryptKey;
-		}
-		else {
-			VPN.globaldao.writeToLog("AES Decrypt Key not set! Invalid key length! Valid Length: 16 bytes");
-		}
-	}
-
-	// TODO: Implement additional keys here (hint: private shared key)
-    // (You can use an overloaded SecretKeySpec)
-    public SecretKeySpec getAesEncryptKey() {
-		return new SecretKeySpec(this.aesBaseEncryptKey, "AES");
+        if (decryptKey.length == kKeyLength) {
+            this.aesBaseDecryptKey = decryptKey;
+        }
+        else {
+            VPN.globaldao.writeToLog("AES Decrypt Key not set! Invalid key length! Valid Length: 16 bytes");
+        }
     }
 
-	// TODO: Implement additional keys here (hint: private shared key)
+    // TODO: Implement additional keys here (hint: private shared key)
+    // (You can use an overloaded SecretKeySpec)
+    public SecretKeySpec getAesEncryptKey() {
+        return new SecretKeySpec(this.aesBaseEncryptKey, "AES");
+    }
+
+    // TODO: Implement additional keys here (hint: private shared key)
     // (You can use an overloaded SecretKeySpec)
     public SecretKeySpec getAesDecryptKey() {
-		return new SecretKeySpec(this.aesBaseDecryptKey, "AES");
+        return new SecretKeySpec(this.aesBaseDecryptKey, "AES");
     }
 
     public void setConnectionPanel(ConnectionPanel connectionPanel) {
