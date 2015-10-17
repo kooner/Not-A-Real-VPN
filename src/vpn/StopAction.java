@@ -10,6 +10,7 @@ public class StopAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        VPN.globaldao.getDiffieHellman().endSession();
         String status = VPN.globaldao.getStatus();
         if (status == Status.DISCONNECTED) {
             VPN.globaldao.writeToLog("You are already disconnected");

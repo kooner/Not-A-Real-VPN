@@ -32,15 +32,7 @@ public class VPN {
         globaldao.setConnectionPanel(cp);
         globaldao.setLogPanel(lp);
         globaldao.setSendPanel(sp);
-
-        // Set AES keys to constant PLACEHOLDERKEY
-        // WARNING: Final delivered product should NOT use AES keys set here
-        try {
-			globaldao.setAesBaseEncryptKey(PLACEHOLDERKEY.getBytes("UTF-8"));
-			globaldao.setAesBaseDecryptKey(PLACEHOLDERKEY.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+        globaldao.setDiffieHellman(new DiffieHellman());
 
         JPanel mainPanel = new JPanel();
         mainPanel.add(cp);

@@ -2,6 +2,7 @@ package vpn;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.io.BufferedInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -30,6 +31,7 @@ public class GlobalDao {
     private Socket clientSocket;
     private BufferedInputStream inputStream;
     private DataOutputStream outputWriter;
+    private DiffieHellman diffieHellman;
 
     // Base AES encryption keys
     // These must be the length of our AES Cipher Block Length (16 bytes)
@@ -38,22 +40,24 @@ public class GlobalDao {
     // TODO: Add additional keys here (shared key, etc.)
 
     // In: 16-byte key
-    public void setAesBaseEncryptKey(byte [] encryptKey) {
+    public void setAesBaseEncryptKey(byte [] encryptKey) throws UnsupportedEncodingException {
         if (encryptKey.length == kKeyLength) {
             this.aesBaseEncryptKey = encryptKey;
         }
         else {
             VPN.globaldao.writeToLog("AES Encrypt Key not set! Invalid key length! Valid Length: 16 bytes");
+            throw new UnsupportedEncodingException();
         }
     }
 
     // In: 16-byte key
-    public void setAesBaseDecryptKey(byte [] decryptKey) {
+    public void setAesBaseDecryptKey(byte [] decryptKey) throws UnsupportedEncodingException {
         if (decryptKey.length == kKeyLength) {
             this.aesBaseDecryptKey = decryptKey;
         }
         else {
             VPN.globaldao.writeToLog("AES Decrypt Key not set! Invalid key length! Valid Length: 16 bytes");
+            throw new UnsupportedEncodingException();
         }
     }
 
@@ -167,5 +171,13 @@ public class GlobalDao {
             } catch (IOException e) {}
             serverSocket = null;
         }
+    }
+    
+    public void setDiffieHellman(DiffieHellman diffieHellman) {
+        this.diffieHellman = diffieHellman;
+    }
+    
+    public DiffieHellman getDiffieHellman() {
+        return this.diffieHellman;
     }
 }

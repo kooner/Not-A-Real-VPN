@@ -32,25 +32,41 @@ public class ReceiveMessage implements Runnable {
 				byte [] bCiphertext = new byte [msgLen];
 				System.arraycopy(recvBuffer, 0, bCiphertext, 0, bCiphertext.length);
 				String sCiphertext = new String(bCiphertext, "UTF-8");
+				DiffieHellman diffieHellman = VPN.globaldao.getDiffieHellman();
+				if (diffieHellman.isSessionInitialized()) {
+				    try {
+	                    // Initialize aesCipher
+	                    Cipher aesCipher;
+	                    aesCipher = Cipher.getInstance("AES");
+	                    aesCipher.init(Cipher.DECRYPT_MODE, diffieHellman.getAesSessionDecryptKey());
 
-				try {
-					// Initialize aesCipher
-			        Cipher aesCipher;
-					aesCipher = Cipher.getInstance("AES");
-					aesCipher.init(Cipher.DECRYPT_MODE, VPN.globaldao.getAesDecryptKey());
+	                    // Decrypt received message
+	                    byte [] bPlaintext = aesCipher.doFinal(bCiphertext);
+	                    String sPlaintext = new String(bPlaintext, "UTF-8");
 
-					// Decrypt received message
-					byte [] bPlaintext = aesCipher.doFinal(bCiphertext);
-					String sPlaintext = new String(bPlaintext, "UTF-8");
-
-					// Write received message to log
-					VPN.globaldao.writeToLog("Received (ciphertext): " + sCiphertext);
-					VPN.globaldao.writeToLog("Received (plaintext): " + sPlaintext);
-					VPN.globaldao.writeToLog("");
-				} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
-					e.printStackTrace();
-					VPN.globaldao.writeToLog("Failure while decrypting received message!");
+	                    // Write received message to log
+	                    VPN.globaldao.writeToLog("Received (ciphertext): " + sCiphertext);
+	                    VPN.globaldao.writeToLog("Received (plaintext): " + sPlaintext);
+	                    VPN.globaldao.writeToLog("");
+	                } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
+	                    e.printStackTrace();
+	                    VPN.globaldao.writeToLog("Failure while decrypting received message!");
+	                }
+				} else {
+				    try {
+	                    Cipher aesCipher;
+	                    aesCipher = Cipher.getInstance("AES");
+	                    aesCipher.init(Cipher.DECRYPT_MODE, VPN.globaldao.getAesDecryptKey());
+	                    byte [] bPlaintext = aesCipher.doFinal(bCiphertext);
+	                    diffieHellman.setPeerSecretBytes(bPlaintext);
+	                    VPN.globaldao.writeToLog("The shared secret key is: " + diffieHellman.getSharedSecretKey().toString());
+	                    diffieHellman.sendMySecret();
+	                } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
+	                    e.printStackTrace();
+	                    VPN.globaldao.writeToLog("Failure while decrypting received message!");
+	                }
 				}
+				
 	        // Connection closed for whatever reason, probably intentionally
 	        } catch (IOException e) {
 	            VPN.globaldao.forceCloseSockets();

@@ -21,6 +21,10 @@ public class SendMessage implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String status = VPN.globaldao.getStatus();
+        DiffieHellman diffieHellman = VPN.globaldao.getDiffieHellman();
+        if (!diffieHellman.isSessionInitialized()) {
+            return;
+        }
         if (status == Status.DISCONNECTED || status == Status.CLIENT || status == Status.SERVER) {
             VPN.globaldao.writeToLog("Can't send message while not connected.");
         } else if (status == Status.CLIENT_CONNECTED || status == Status.SERVER_CONNECTED) {
@@ -30,7 +34,7 @@ public class SendMessage implements ActionListener {
 			Cipher aesCipher = null;
 			try {
 				aesCipher = Cipher.getInstance("AES");
-				aesCipher.init(Cipher.ENCRYPT_MODE, VPN.globaldao.getAesEncryptKey());
+				aesCipher.init(Cipher.ENCRYPT_MODE, diffieHellman.getAesSessionEncryptKey());
 			} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException e1) {
 				e1.printStackTrace();
                 VPN.globaldao.writeToLog("Error occurred while setting up encryption cipher!");
