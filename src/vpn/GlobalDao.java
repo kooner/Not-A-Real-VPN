@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import vpn.ui.ConnectionPanel;
 import vpn.ui.LogPanel;
@@ -23,6 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class GlobalDao {
 
     public final int kKeyLength = 16;
+    public final int nonceLength = 4;
 
     private ConnectionPanel connectionPanel;
     private LogPanel logPanel;
@@ -38,6 +40,8 @@ public class GlobalDao {
     private byte [] aesBaseEncryptKey;
     private byte [] aesBaseDecryptKey;
     // TODO: Add additional keys here (shared key, etc.)
+    private byte [] personalNonce;
+    private byte [] externalNonce;
 
     // In: 16-byte key
     public void setAesBaseEncryptKey(byte [] encryptKey) throws UnsupportedEncodingException {
@@ -65,6 +69,24 @@ public class GlobalDao {
     // (You can use an overloaded SecretKeySpec)
     public SecretKeySpec getAesEncryptKey() {
         return new SecretKeySpec(this.aesBaseEncryptKey, "AES");
+    }
+    
+    public void setPersonalNonce() {
+    	SecureRandom sr = new SecureRandom();
+    	this.personalNonce = new byte [nonceLength];
+    	sr.nextBytes(this.personalNonce);
+    }
+    
+    public byte[] getPersonalNonce() {
+    	return this.personalNonce;
+    }
+    
+    public void setExternalNonce(byte [] extNonce) {
+    	this.externalNonce = extNonce;
+    }
+    
+    public byte[] getExternalNonce() {
+    	return externalNonce;
     }
 
     // TODO: Implement additional keys here (hint: private shared key)

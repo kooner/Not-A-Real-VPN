@@ -90,8 +90,11 @@ public class DiffieHellman {
         }
         try {
             byte[] bPlaintext = getMySecretBytes();
-            byte[] bCiphertext = aesCipher.doFinal(bPlaintext);
-            outputWriter.write(bCiphertext);
+          	byte [] bPadTextNonce = new byte [16];
+            System.arraycopy(VPN.globaldao.getExternalNonce(), 0, bPadTextNonce, 12, VPN.globaldao.getExternalNonce().length);
+            byte[] bPlainExtNonceSecret = concat(bPadTextNonce, bPlaintext);
+            byte[] bCipherExtNonceSecret = aesCipher.doFinal(bPlainExtNonceSecret);
+            outputWriter.write(bCipherExtNonceSecret);
             isSecretSent = true;
         } catch (IllegalBlockSizeException | BadPaddingException | IOException e) {
             e.printStackTrace();
@@ -106,4 +109,13 @@ public class DiffieHellman {
     public SecretKeySpec getAesSessionDecryptKey() {
         return this.aesSessionDecryptKey;
     }
+    
+    public byte[] concat(byte[] a, byte[] b) {
+    	   int aLen = a.length;
+    	   int bLen = b.length;
+    	   byte[] c= new byte[aLen+bLen];
+    	   System.arraycopy(a, 0, c, 0, aLen);
+    	   System.arraycopy(b, 0, c, aLen, bLen);
+    	   return c;
+    	}
 }

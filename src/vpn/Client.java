@@ -33,6 +33,15 @@ public class Client implements ActionListener {
                     VPN.globaldao.setClientSocket(clientSocket);
                     VPN.globaldao.setInputStream(inputStream);
                     VPN.globaldao.setOutputWriter(outputWriter);
+                    // set personal nonce to send
+                    VPN.globaldao.setPersonalNonce();
+                    outputWriter.write(VPN.globaldao.getPersonalNonce());
+                    VPN.globaldao.writeToLog("Sent personal nonce: " + java.nio.ByteBuffer.wrap(VPN.globaldao.getPersonalNonce()).getInt());
+                    // receive external nonce to encrypt and send with key
+                    byte [] recvNonce = new byte [VPN.globaldao.nonceLength];
+                    inputStream.read(recvNonce);
+                    VPN.globaldao.setExternalNonce(recvNonce);
+                    VPN.globaldao.writeToLog("Received External nonce: " + java.nio.ByteBuffer.wrap(VPN.globaldao.getExternalNonce()).getInt());
                     VPN.globaldao.getDiffieHellman().sendMySecret();
                     VPN.globaldao.writeToLog("Connected to the server.");
                     VPN.globaldao.setStatus(Status.CLIENT_CONNECTED);

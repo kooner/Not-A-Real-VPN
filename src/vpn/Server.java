@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
+import java.security.SecureRandom;
 
 /*
  * This class is called when the "Listen as server" button is pressed
