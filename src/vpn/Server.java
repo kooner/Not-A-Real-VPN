@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
-import java.security.SecureRandom;
 
 /*
  * This class is called when the "Listen as server" button is pressed
@@ -17,24 +16,22 @@ public class Server implements ActionListener {
         String status = VPN.globaldao.getStatus();
         if (status == Status.DISCONNECTED) {
             try {
-                VPN.globaldao.setAesBaseEncryptKey(VPN.globaldao.getSharedSecretKey().getBytes("UTF-8"));
-                VPN.globaldao.setAesBaseDecryptKey(VPN.globaldao.getSharedSecretKey().getBytes("UTF-8"));
-                try {
-                    int port = Integer.parseInt(VPN.globaldao.getPort());
-                    ServerSocket serverSocket = new ServerSocket(port);
-                    DiffieHellman diffieHellman = new DiffieHellman();
-                    VPN.globaldao.setServerSocket(serverSocket);
-                    VPN.globaldao.writeToLog("Successfully listening on port " + port + ".");
-                    VPN.globaldao.setStatus(Status.SERVER);
-                    VPN.globaldao.setDiffieHellman(diffieHellman);
-                    new Thread(new ServerListener()).start();
-                } catch(NumberFormatException nfe) {
-                    VPN.globaldao.writeToLog("Please enter a valid port number.");
-                } catch(IOException ie) {
-                    VPN.globaldao.writeToLog("An issue occured while trying to bind to the port: " + ie.getMessage());
-                }
+                VPN.globaldao.setDiffieHellman(new DiffieHellman());
+                VPN.globaldao.setAesBaseKey(VPN.globaldao.getSharedSecretKey().getBytes("UTF-8"));
+                int port = Integer.parseInt(VPN.globaldao.getPort());
+                ServerSocket serverSocket = new ServerSocket(port);
+                VPN.globaldao.setServerSocket(serverSocket);
+                VPN.globaldao.writeToLog("Successfully listening on port " + port + ".");
+                VPN.globaldao.setStatus(Status.SERVER);
+                new Thread(new ServerListener()).start();
+            } catch(NumberFormatException nfe) {
+                VPN.globaldao.writeToLog("Please enter a valid port number.");
             } catch (UnsupportedEncodingException uee) {
+                // Never going to happen
                 uee.printStackTrace();
+                System.exit(1);
+            } catch(IOException ie) {
+                VPN.globaldao.writeToLog("An issue occured while trying to bind to the port: " + ie.getMessage());
             }
         } else if (status == Status.CLIENT) {
             VPN.globaldao.writeToLog("You are currently attempting to connect. Disconnect first.");

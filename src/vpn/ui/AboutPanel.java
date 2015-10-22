@@ -3,7 +3,6 @@ package vpn.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -15,7 +14,7 @@ import vpn.VPN;
 public class AboutPanel extends JPanel {
     public AboutPanel() {
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(VPN.x-50, VPN.y/9));
+        setPreferredSize(new Dimension(VPN.x - 50, VPN.y / 9));
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "About"));
 
         JLabel about = new JLabel("Amitoj Kooner | Isaac Cheng | Alan Larson | Byron Duenas", SwingConstants.CENTER);

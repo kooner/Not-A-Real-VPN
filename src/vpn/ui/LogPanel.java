@@ -10,12 +10,12 @@ import javax.swing.JTextArea;
 import vpn.VPN;
 
 public class LogPanel extends JPanel {
-    
+
     private JTextArea textArea;
 
     public LogPanel() {
         setLayout(new BorderLayout());
-        
+
         textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setLineWrap(true);

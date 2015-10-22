@@ -20,21 +20,21 @@ import vpn.StopAction;
 import vpn.VPN;
 
 public class ConnectionPanel extends JPanel {
-    
+
     private JTextField ip;
     private JTextField port;
     private JTextField ssk;
     private JLabel status;
-    
+
     public ConnectionPanel() {
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(VPN.x-50, VPN.y/4));
+        setPreferredSize(new Dimension(VPN.x - 50, VPN.y / 4));
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Connection"));
-        
+
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setPreferredSize(new Dimension((VPN.x-50)/3, VPN.y/4));
-        
+        leftPanel.setPreferredSize(new Dimension((VPN.x - 50) / 3, VPN.y / 4));
+
         JLabel ipLabel = new JLabel("IP: ");
         ip = new JTextField(15);
         ip.setText("localhost");
@@ -64,7 +64,7 @@ public class ConnectionPanel extends JPanel {
         statusPanel.add(statusLabel);
         statusPanel.add(status);
         leftPanel.add(statusPanel);
-        
+
         JButton clientButton = new JButton("Connect as client");
         clientButton.addActionListener(new Client());
         JButton serverButton = new JButton("Listen as server");
@@ -73,33 +73,33 @@ public class ConnectionPanel extends JPanel {
         stopButton.addActionListener(new StopAction());
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-        rightPanel.setPreferredSize(new Dimension((VPN.x-50)/4, VPN.y/4));
+        rightPanel.setPreferredSize(new Dimension((VPN.x - 50) / 4, VPN.y / 4));
         rightPanel.add(clientButton);
         rightPanel.add(Box.createGlue());
         rightPanel.add(serverButton);
         rightPanel.add(Box.createGlue());
         rightPanel.add(stopButton);
-        
+
         add(leftPanel, BorderLayout.LINE_START);
         add(rightPanel, BorderLayout.CENTER);
     }
-    
+
     public String getIp() {
         return ip.getText();
     }
-    
+
     public String getPort() {
         return port.getText();
     }
-    
+
     public String getSharedSecretKey() {
         return ssk.getText();
     }
-    
+
     public String getStatus() {
         return status.getText();
     }
-    
+
     public void setStatus(String s) {
         status.setText(s);
     }

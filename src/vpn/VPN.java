@@ -1,7 +1,5 @@
 package vpn;
 
-import java.io.UnsupportedEncodingException;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -12,23 +10,19 @@ import vpn.ui.SendPanel;
 
 public class VPN {
     public static GlobalDao globaldao = new GlobalDao();
-    
+
     public static final int x = 1024;
     public static final int y = 768;
-    
-    public static final String PLACEHOLDERKEY = "1234432112344321";
-
-    private final JFrame frame = new JFrame("CPEN 442 [NOT A REAL] VPN");
 
     public static void main(String[] args) {
-	    (new VPN()).run();
+        new VPN().run();
     }
-    
+
     private void run() {
         ConnectionPanel cp = new ConnectionPanel();
         LogPanel lp = new LogPanel();
         SendPanel sp = new SendPanel();
-        
+
         globaldao.setConnectionPanel(cp);
         globaldao.setLogPanel(lp);
         globaldao.setSendPanel(sp);
@@ -39,7 +33,8 @@ public class VPN {
         mainPanel.add(lp);
         mainPanel.add(sp);
         mainPanel.add(new AboutPanel());
-        
+
+        JFrame frame = new JFrame("CPEN 442 [NOT A REAL] VPN");
         frame.add(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);

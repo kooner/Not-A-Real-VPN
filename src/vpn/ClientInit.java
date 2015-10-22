@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -13,15 +12,20 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 
 /*
- * This class waits for a client to connect, then starts a new Thread which reads
- * input from the client and writes it to the log.
+ * This class connects to the server and establishes a session key
  */
-public class ServerListener implements Runnable {
+public class ClientInit implements Runnable {
+
+    private final int kBufferSize = 16000;
+
     @Override
     public void run() {
         try {
-            // accept() is a blocking call
-            Socket clientSocket = VPN.globaldao.getServerSocket().accept();
+            VPN.globaldao.setAesBaseKey(VPN.globaldao.getSharedSecretKey().getBytes("UTF-8"));
+            VPN.globaldao.setDiffieHellman(new DiffieHellman());
+            String ip = VPN.globaldao.getIp();
+            int port = Integer.parseInt(VPN.globaldao.getPort());
+            Socket clientSocket = new Socket(ip, port);
             BufferedInputStream inputStream = new BufferedInputStream(clientSocket.getInputStream());
             DataOutputStream outputWriter = new DataOutputStream(clientSocket.getOutputStream());
             VPN.globaldao.setClientSocket(clientSocket);
@@ -39,11 +43,19 @@ public class ServerListener implements Runnable {
             inputStream.read(recvNonce);
             VPN.globaldao.setExternalNonce(recvNonce);
             VPN.globaldao.writeToLog(
-                    "Received External nonce: " + ByteBuffer.wrap(VPN.globaldao.getExternalNonce()).getInt());
+                    "Received external nonce: " + ByteBuffer.wrap(VPN.globaldao.getExternalNonce()).getInt());
             VPN.globaldao.getDiffieHellman().sendMySecret();
 
-            byte[] recvBuffer = new byte[16000];
+            // receive and decrypt message
+            byte[] recvBuffer = new byte[kBufferSize];
             int msgLen = inputStream.read(recvBuffer);
+            /*
+             * TODO: add a method which read from the stream and do all the
+             * checking if (msgLen == -1) { VPN.globaldao.forceEnd();
+             * VPN.globaldao.writeToLog(
+             * "Connection closed unexpectedly while establishing a shared key"
+             * ); VPN.globaldao.setStatus(Status.DISCONNECTED); return; }
+             */
             byte[] bCiphertext = new byte[msgLen];
             System.arraycopy(recvBuffer, 0, bCiphertext, 0, bCiphertext.length);
             DiffieHellman diffieHellman = VPN.globaldao.getDiffieHellman();
@@ -57,7 +69,6 @@ public class ServerListener implements Runnable {
             byte[] bPlainNonce = new byte[4];
             System.arraycopy(bPlaintext, 12, bPlainNonce, 0, bPlainNonce.length);
             System.arraycopy(bPlaintext, 16, bKeyPlainText, 0, bKeyPlainText.length);
-            System.out.println(bPlaintext);
             VPN.globaldao.writeToLog("Decrypted Nonce: " + ByteBuffer.wrap(bPlainNonce).getInt());
             if (!Arrays.equals(VPN.globaldao.getPersonalNonce(), bPlainNonce)) {
                 VPN.globaldao.forceEnd();
@@ -68,13 +79,13 @@ public class ServerListener implements Runnable {
             diffieHellman.setPeerSecretBytes(bKeyPlainText);
             VPN.globaldao.writeToLog("The shared session key is: " + diffieHellman.getSharedSecretKey());
 
-            VPN.globaldao.writeToLog("Connected to client");
-            VPN.globaldao.setStatus(Status.SERVER_CONNECTED);
+            VPN.globaldao.writeToLog("Connected to the server.");
+            VPN.globaldao.setStatus(Status.CLIENT_CONNECTED);
             new Thread(new ReceiveMessage()).start();
-        } catch (SocketException se) {
-            // server socket closed via StopAction
         } catch (BadPaddingException | IllegalBlockSizeException | IOException e) {
-            VPN.globaldao.writeToLog("Error occurred while accepting client socket: " + e.getMessage());
+            VPN.globaldao.forceEnd();
+            VPN.globaldao.writeToLog("Unexpected error while establishing key: " + e.getMessage());
+            VPN.globaldao.setStatus(Status.DISCONNECTED);
         }
     }
 }
