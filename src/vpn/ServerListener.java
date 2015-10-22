@@ -57,7 +57,6 @@ public class ServerListener implements Runnable {
             byte[] bPlainNonce = new byte[4];
             System.arraycopy(bPlaintext, 12, bPlainNonce, 0, bPlainNonce.length);
             System.arraycopy(bPlaintext, 16, bKeyPlainText, 0, bKeyPlainText.length);
-            System.out.println(bPlaintext);
             VPN.globaldao.writeToLog("Decrypted Nonce: " + ByteBuffer.wrap(bPlainNonce).getInt());
             if (!Arrays.equals(VPN.globaldao.getPersonalNonce(), bPlainNonce)) {
                 VPN.globaldao.forceEnd();

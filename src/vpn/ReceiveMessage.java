@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.xml.bind.DatatypeConverter;
 
 /*
  * This class waits for messages over the socket and writes them to the log
@@ -29,7 +30,7 @@ public class ReceiveMessage implements Runnable {
                 // Copy bytes into new buffer for isolation
                 byte[] bCiphertext = new byte[msgLen];
                 System.arraycopy(recvBuffer, 0, bCiphertext, 0, bCiphertext.length);
-                String sCiphertext = new String(bCiphertext, "UTF-8");
+                String sCiphertext = DatatypeConverter.printHexBinary(bCiphertext);
 
                 Cipher aesCipher = VPN.globaldao.getAesSessionCipher(Cipher.DECRYPT_MODE);
 

@@ -69,7 +69,7 @@ public class ConnectionPanel extends JPanel {
         clientButton.addActionListener(new Client());
         JButton serverButton = new JButton("Listen as server");
         serverButton.addActionListener(new Server());
-        JButton stopButton = new JButton("Stop Action");
+        JButton stopButton = new JButton("Disconnect");
         stopButton.addActionListener(new StopAction());
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));

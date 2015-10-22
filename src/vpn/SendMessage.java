@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.xml.bind.DatatypeConverter;
 
 /*
  * This class is called when the "Send" button is pressed
@@ -35,7 +36,7 @@ public class SendMessage implements ActionListener {
 
                 // Encrypt text
                 bCiphertext = aesCipher.doFinal(bPlaintext);
-                sCiphertext = new String(bCiphertext, "UTF-8");
+                sCiphertext = DatatypeConverter.printHexBinary(bCiphertext);
 
                 // Send ciphertext
                 outputWriter.write(bCiphertext);
