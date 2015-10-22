@@ -2,6 +2,8 @@ package vpn;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -36,11 +38,19 @@ public class ReceiveMessage implements Runnable {
 
                 // Decrypt received message
                 byte[] bPlaintext = aesCipher.doFinal(bCiphertext);
-                String sPlaintext = new String(bPlaintext, "UTF-8");
-
+                int textHash = ByteBuffer.wrap(Arrays.copyOfRange(bPlaintext, bPlaintext.length - 4, bPlaintext.length)).getInt();
+                String sPlaintext = new String(Arrays.copyOfRange(bPlaintext, 0, bPlaintext.length - 4), "UTF-8");
                 // Write received message to log
                 VPN.globaldao.writeToLog("Received (ciphertext): " + sCiphertext);
                 VPN.globaldao.writeToLog("Received (plaintext): " + sPlaintext);
+                VPN.globaldao.writeToLog("Received (texthash): " + textHash);
+                if (sPlaintext.hashCode() != textHash) {
+                	VPN.globaldao.forceEnd();
+                    VPN.globaldao.writeToLog("Message integrity lost, disconnecting");
+                    VPN.globaldao.setStatus(Status.DISCONNECTED);
+                    break;
+                }
+
             } catch (IllegalBlockSizeException | BadPaddingException e) {
                 e.printStackTrace();
                 VPN.globaldao.writeToLog("Failure while decrypting received message!");

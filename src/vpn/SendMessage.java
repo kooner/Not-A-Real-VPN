@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -31,8 +32,10 @@ public class SendMessage implements ActionListener {
             byte[] bCiphertext = null;
             try {
                 String sPlaintext = VPN.globaldao.getTextToSend();
+                int textHash = sPlaintext.hashCode();
                 String sCiphertext = "";
                 byte[] bPlaintext = sPlaintext.getBytes("UTF-8");
+                bPlaintext = concat(bPlaintext, ByteBuffer.allocate(4).putInt(textHash).array());
 
                 // Encrypt text
                 bCiphertext = aesCipher.doFinal(bPlaintext);
@@ -42,6 +45,8 @@ public class SendMessage implements ActionListener {
                 outputWriter.write(bCiphertext);
                 VPN.globaldao.writeToLog("Sent (ciphertext): " + sCiphertext);
                 VPN.globaldao.writeToLog("Sent (plaintext): " + sPlaintext);
+                VPN.globaldao.writeToLog("Sent (hashtext): " + sPlaintext.hashCode());
+
             } catch (IllegalBlockSizeException | BadPaddingException | IOException e1) {
                 e1.printStackTrace();
                 VPN.globaldao.writeToLog("Failure while encrypting and sending message!");
@@ -49,4 +54,12 @@ public class SendMessage implements ActionListener {
         }
     }
 
+    public byte[] concat(byte[] a, byte[] b) {
+        int aLen = a.length;
+        int bLen = b.length;
+        byte[] c = new byte[aLen + bLen];
+        System.arraycopy(a, 0, c, 0, aLen);
+        System.arraycopy(b, 0, c, aLen, bLen);
+        return c;
+    }
 }
